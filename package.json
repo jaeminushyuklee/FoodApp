@@ -8,6 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@ant-design/react-native": "^3.3.0",
     "@react-navigation/bottom-tabs": "^5.2.6",
     "@react-navigation/material-bottom-tabs": "^5.1.8",
     "@react-navigation/native": "^5.1.5",
