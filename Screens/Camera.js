@@ -12,6 +12,7 @@ export default class CameraScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      retakeInt: 0,
 
     };
   }
