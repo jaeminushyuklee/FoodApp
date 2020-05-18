@@ -9,104 +9,173 @@ export default class Journal extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isReady: false,
+      activeSections: [0],
       currentdate: '',
+      dnumber: 0,
+      mnumber:0,
+      ynumber: 0,
       indexofdate: 0,
       entirelog : [
         {
-          date: "1552020",
+          date: "1752020",
           meals: [
             {
               id: 1,
               name: 'egg',
               imageurl: "something",
-              protein: 5,
-              carbohydrate: 7,
-              fat: 8,
+              protein: 1,
+              carbohydrate: 2,
+              fat: 3,
             },
             {
               id: 2,
               name: 'rice',
               imageurl: "something",
-              protein: 14,
-              carbohydrate: 65,
+              protein: 11,
+              carbohydrate: 12,
               fat: 2,
             }
           ]
         },
         {
-          date: "1652020",
+          date: "1852020",
           meals: [
             {
               id: 1,
               name: 'hamburger',
               imageurl: "something",
-              protein: 5,
-              carbohydrate: 7,
+              protein: 111,
+              carbohydrate: 222,
               fat: 8,
             },
             {
               id: 2,
               name: 'peanuts',
               imageurl: "something",
-              protein: 14,
-              carbohydrate: 65,
+              protein: 333,
+              carbohydrate: 444,
               fat: 2,
             }
           ]
         },
         {
-          date: "1752020",
+          date: "1952020",
           meals: [
             {
               id: 1,
               name: 'noodles',
               imageurl: "something",
-              protein: 5,
-              carbohydrate: 7,
+              protein: 1111,
+              carbohydrate: 2222,
               fat: 8,
             },
             {
               id: 2,
               name: 'drink',
               imageurl: "something",
-              protein: 14,
-              carbohydrate: 65,
+              protein: 3333,
+              carbohydrate: 4444,
               fat: 2,
             }
           ]
         }
       ]
-    }  
+    };
+    this.onChange = activeSections => {
+      this.setState({ activeSections });
+    };  
   }
-  componentDidMount() {
+
+  async renderIf(condition, content) {
+    if (condition) {
+      return content;
+    } else {
+      return null;
+    }
+  }
+
+  async componentDidMount() {
+    await Font.loadAsync(
+      'antoutline',
+      // eslint-disable-next-line
+      require('@ant-design/icons-react-native/fonts/antoutline.ttf')
+    );
+
+    await Font.loadAsync(
+      'antfill',
+      // eslint-disable-next-line
+      require('@ant-design/icons-react-native/fonts/antfill.ttf')
+    );
+    // eslint-disable-next-line
+    this.setState({ isReady: true });
     var date = new Date().getDate();
     var month = new Date().getMonth() + 1;
     var year = new Date().getFullYear();
+    var index = this.state.entirelog.findIndex(x => x.date === date.toString() + month.toString() + year.toString());
     this.setState({
       currentdate : date.toString() + month.toString() + year.toString(),
-      indexofdate : this.state.entirelog.findIndex(std => std.date === this.state.currendate)
+      indexofdate : index,
+      dnumber: date,
+      mnumber: month,
+      ynumber: year,
     });
     
   }
   
-
-  renderButtons() {
-    return this.state.entirelog[0].meals.map((item) => {
+  renderAccordion() {
+    return this.state.entirelog[this.state.indexofdate].meals.map((item) => {
       return(
-        <Button>
-          {item.name}
-        </Button>
+        <Accordion
+
+          onChange={this.onChange}
+          activeSections={this.state.activeSections}
+        >
+          <Accordion.Panel header= {item.name}>
+            <List>
+              <List.Item>
+                {item.imageurl}
+              </List.Item>
+              <List.Item>{item.protein}</List.Item>
+              <List.Item>{item.carbohydrate}</List.Item>
+            </List>
+          </Accordion.Panel>
+        </Accordion>
       );
     });
   }
   render() {
+    if (!this.state.isReady) {
+      return <AppLoading />;
+    }
     return(
-      <View style = {styles.container}>
-          {this.renderButtons()}
-          <Text>{this.state.indexofdate}</Text>
+      <View>
+      <View style={{flexDirection: 'row', marginTop: 40, alignItems: 'center', justifyContent:'center'}}>
+        <Button onPress = {() => {
+              this.setState({
+                indexofdate: this.state.indexofdate - 1,
+              });
+            }}
+        >left</Button>
+        <Text> Today </Text>
+        <Button onPress = {() => {
+              this.setState({
+                indexofdate: this.state.indexofdate + 1,
+              });
+            }}
+        >right</Button>
       </View>
+      <View style={{marginTop: 40, marginBottom: 10 }}>
+          {this.renderAccordion()}
+      </View>
+      </View>
+      
+       
+  
     )
   }
+  
+
   
 }
 
