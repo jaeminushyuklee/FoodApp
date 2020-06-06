@@ -41,9 +41,12 @@ export default class PhotoConfirm extends Component {
              onPress = {async () => {
                 const response = await fetch(this.state.imageurl);
                 const blob = await response.blob();
-                var randomid = uuid.v4();
-                var ref = firebase.storage().ref().child(randomid);
+                const randomid = uuid.v4();
+                var ref = firebase.storage().ref(randomid);
                 ref.put(blob);
+
+                const downloadurl = await ref.getDownloadURL().catch((error) => { throw error });
+
                 
                 var db = firebase.firestore();
                 db.collection("entirelog").doc(this.state.docid).set({
@@ -68,6 +71,7 @@ export default class PhotoConfirm extends Component {
                             protein: this.state.protein,
                             carbohydrate: this.state.carbohyrdate,
                             foodname: this.state.foodname,
+                            durl: downloadurl,
                             photoid: randomid,
                         });
                     } else {
@@ -76,6 +80,7 @@ export default class PhotoConfirm extends Component {
                             protein: this.state.protein,
                             carbohydrate: this.state.carbohyrdate,
                             foodname: this.state.foodname,
+                            durl: downloadurl,
                             photoid: randomid,
                         });
                     }
