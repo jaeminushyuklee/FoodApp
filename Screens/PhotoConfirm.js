@@ -43,7 +43,7 @@ export default class PhotoConfirm extends Component {
                 const blob = await response.blob();
                 const randomid = uuid.v4();
                 var ref = firebase.storage().ref(randomid);
-                ref.put(blob);
+                await ref.put(blob);
 
                 const downloadurl = await ref.getDownloadURL().catch((error) => { throw error });
 

@@ -112,15 +112,6 @@ export default class Journal extends Component {
     }
     }
     
-    returnurl= async (filename)=>{
-      var ref = firebase.storage().ref(filename);
-      var url = await ref.getDownloadURL();
-      return url;
-    }
-  
-  
-  
-
   renderAccordion() {
     return this.state.accordionarr.map((item,index) => {
       return(
@@ -134,7 +125,7 @@ export default class Journal extends Component {
               <List.Item>
                   <Image
                   style = {styles.sizer}
-                  source = {{uri: this.returnurl(item.photoid)}}
+                  source = {{uri: item.durl}}
                   />
                 </List.Item>
                 <List.Item>{item.protein}</List.Item>
@@ -151,7 +142,6 @@ export default class Journal extends Component {
     return (
       <View style={{flexDirection: 'row', marginTop: 40, alignItems: 'center', justifyContent:'center'}}>
         <Button onPress = {() => {
-            
               let datearr = this.state.displaydatestringversion.split("-");
               let present = new Date(datearr[0], datearr[1] - 1, datearr[2])
               let yesterdayinmilli = present.getTime() - 86400000;
@@ -159,8 +149,6 @@ export default class Journal extends Component {
               let yyear = yesterday.getFullYear();
               let ymonth = yesterday.getMonth() + 1;
               let ydate = yesterday.getDate(); 
-        
-              
               this.setState({
                 displaydatestringversion: yyear + "-" + ymonth + "-" + ydate,
               });
@@ -185,7 +173,6 @@ export default class Journal extends Component {
         >right</Button>
       </View>
     );
-
   }
 
   render() {
