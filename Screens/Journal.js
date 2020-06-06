@@ -4,85 +4,31 @@ import { Image } from 'react-native'
 import { Accordion, List, Button } from '@ant-design/react-native';
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
-import firebase from 'firebase';
-import {db} from '../babel.config'
+import firebase from '../firebaseDb';
 
 
 export default class Journal extends Component {
   constructor(props) {
     super(props);
+    
     this.state = {
       isReady: false,
+      firsttime: true,
       activeSections: [0],
       currentdate: '',
       displaydate: '',
-      indexofdate: 0,
-      entirelog : [{
-        "date": "22-5-2020",
-        "meals": [{
-            "id": 1,
-            "name": "egg",
-            "imageurl": "something",
-            "protein": 1,
-            "carbohydrate": 2,
-            "fat": 3
-          },
-          {
-            "id": 2,
-            "name": "rice",
-            "imageurl": "something",
-            "protein": 11,
-            "carbohydrate": 12,
-            "fat": 2
-          }
-        ]
-      },
-      {
-        "date": "23-5-2020",
-        "meals": [{
-            "id": 1,
-            "name": "hamburger",
-            "imageurl": "something",
-            "protein": 111,
-            "carbohydrate": 222,
-            "fat": 8
-          },
-          {
-            "id": 2,
-            "name": "peanuts",
-            "imageurl": "something",
-            "protein": 333,
-            "carbohydrate": 444,
-            "fat": 2
-          }
-        ]
-      },
-      {
-        "date": "24-5-2020",
-        "meals": [{
-            "id": 1,
-            "name": "noodles",
-            "imageurl": "something",
-            "protein": 1111,
-            "carbohydrate": 2222,
-            "fat": 8
-          },
-          {
-            "id": 2,
-            "name": "drink",
-            "imageurl": "something",
-            "protein": 3333,
-            "carbohydrate": 4444,
-            "fat": 2
-          }
-        ]
-      }
-    ]
+      displaydatestringversion: '',
+      idofdate: '',
+      entirelog: [],
+      accordionarr: [],
+      urlarray: [],
+      dimageurl: '',
     
     };
     this.onChange = activeSections => {
       this.setState({ activeSections });
     };  
+    
   }
 
   async renderIf(condition, content) {
@@ -93,9 +39,7 @@ export default class Journal extends Component {
     }
   }
 
-
   async componentDidMount() {
-
     await Font.loadAsync(
       'antoutline',
       // eslint-disable-next-line
@@ -107,78 +51,169 @@ export default class Journal extends Component {
       // eslint-disable-next-line
       require('@ant-design/icons-react-native/fonts/antfill.ttf')
     );
-    
     // eslint-disable-next-line
     this.setState({ isReady: true });
+    var db = firebase.firestore();
     var date = new Date().getDate();
     var month = new Date().getMonth() + 1;
     var year = new Date().getFullYear();
-    var index = this.state.entirelog.findIndex(x => x.date === date + "-" + month + "-" +  year);
-    this.setState({
-      currentdate : date + "-" +  month + "-" + year,
-      indexofdate : index,
-    });
-    var display = new DateConversion().dateconversion(this.state.currentdate)
-    this.setState({
-      displaydate: display
+    db.collection('entirelog').where('date','==', year + "-" + month + "-" + date)
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          this.setState({
+            idofdate: doc.id,
+            displaydatestringversion: doc.get('date'),
+            displaydate: new DateConversion().dateconversion(doc.get('date')),
+          });
+          db.collection('entirelog').doc(this.state.idofdate).collection('meals').get().then(querySnapshot => {
+            const yourDocuments = querySnapshot.docs.map((doc) => doc.data());
+            this.setState({
+              accordionarr: yourDocuments
+            });
+          })
+          .catch(err => {
+            alert(err);
+          });
+        });
+      })
+      .catch(error => {
+        console.log("Error getting documents: ", error);
     });
   }
+  
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.displaydatestringversion!==prevState.displaydatestringversion) {
+
+    var db = firebase.firestore();
+    db.collection('entirelog').where('date','==', this.state.displaydatestringversion)
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          this.setState({
+            idofdate: doc.id,
+            displaydatestringversion: doc.get('date'),
+            displaydate: new DateConversion().dateconversion(doc.get('date')),
+          });
+          db.collection('entirelog').doc(this.state.idofdate).collection('meals').get().then(querySnapshot => {
+            const yourDocuments = querySnapshot.docs.map((doc) => doc.data());
+            this.setState({
+              accordionarr: yourDocuments
+            });
+          })
+          .catch(err => {
+            alert(err);
+          });
+        });
+      })
+      .catch(error => {
+        console.log("Error getting documents: ", error);
+    });
+    }
+    }
     
+    returnurl= async (filename)=>{
+      var ref = firebase.storage().ref(filename);
+      var url = await ref.getDownloadURL();
+      return url;
+    }
+  
+  
+  
 
-  
-  
   renderAccordion() {
-    return this.state.entirelog[this.state.indexofdate].meals.map((item) => {
+    return this.state.accordionarr.map((item,index) => {
       return(
-        <Accordion
-
-          onChange={this.onChange}
-          activeSections={this.state.activeSections}
-        >
-          <Accordion.Panel header= {item.name}>
-            <List>
+        <View key = {index}>
+          <Accordion
+            onChange={this.onChange}    
+            activeSections={this.state.activeSections}
+            >
+            <Accordion.Panel header= {item.name}>
+              <List>
               <List.Item>
-                {item.imageurl}
-              </List.Item>
-              <List.Item>{item.protein}</List.Item>
-              <List.Item>{item.carbohydrate}</List.Item>
-            </List>
-          </Accordion.Panel>
-        </Accordion>
+                  <Image
+                  style = {styles.sizer}
+                  source = {{uri: this.returnurl(item.photoid)}}
+                  />
+                </List.Item>
+                <List.Item>{item.protein}</List.Item>
+                <List.Item>{item.carbohydrate}</List.Item>
+              </List>
+            </Accordion.Panel>
+          </Accordion>          
+        </View>
       );
     });
   }
-  render() {
-    if (!this.state.isReady && this.state.entirelog == []) {
-      return <AppLoading />;
-    }
-    return(
-      <View>
+
+  renderButtons() {
+    return (
       <View style={{flexDirection: 'row', marginTop: 40, alignItems: 'center', justifyContent:'center'}}>
         <Button onPress = {() => {
+            
+              let datearr = this.state.displaydatestringversion.split("-");
+              let present = new Date(datearr[0], datearr[1] - 1, datearr[2])
+              let yesterdayinmilli = present.getTime() - 86400000;
+              let yesterday = new Date(yesterdayinmilli);
+              let yyear = yesterday.getFullYear();
+              let ymonth = yesterday.getMonth() + 1;
+              let ydate = yesterday.getDate(); 
+        
+              
               this.setState({
-                displaydate: new DateConversion().dateconversion(this.state.entirelog[this.state.indexofdate - 1].date),
-                indexofdate: this.state.indexofdate - 1,
+                displaydatestringversion: yyear + "-" + ymonth + "-" + ydate,
               });
+              console.log('subtracted', this.state.displaydatestringversion)
+              console.log(this.state.accordionarr)
             }}
         >left</Button>
         <Text> {this.state.displaydate} </Text>
         <Button onPress = {() => {
+              let datearr = this.state.displaydatestringversion.split("-");
+              let present = new Date(datearr[0], datearr[1] - 1, datearr[2])
+              let yesterdayinmilli = present.getTime() + 86400000;
+              let yesterday = new Date(yesterdayinmilli);
+              let yyear = yesterday.getFullYear();
+              let ymonth = yesterday.getMonth() + 1;
+              let ydate = yesterday.getDate(); 
               this.setState({
-                displaydate: new DateConversion().dateconversion(this.state.entirelog[this.state.indexofdate + 1].date),
-                indexofdate: this.state.indexofdate + 1,
+                displaydatestringversion: yyear + "-" + ymonth + "-" + ydate,
               });
+              console.log('added', this.state.displaydatestringversion)
             }}
         >right</Button>
       </View>
+    );
+
+  }
+
+  render() {
+
+    
+
+    if (!this.state.isReady) {
+      return <AppLoading />;
+    }
+    return(
+      <View>
+
+      <View>
+        {this.renderButtons()}
+      </View>
+  
       <View style={{marginTop: 40, marginBottom: 10 }}>
-          {this.renderAccordion()}
+        {this.renderAccordion()}
       </View>
+      
       </View>
+      
+      
+      
       
        
   
-    )
+    );
   }
   
 
@@ -243,5 +278,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    sizer: {
+      width: 50,
+      height: 50,
+    },
 });

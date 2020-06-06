@@ -7,11 +7,33 @@ import CameraScreen from './Screens/Camera';
 import JournalScreen from './Screens/Journal';
 import StatisticsScreen from './Screens/Statistics';
 import ProfileScreen from './Screens/Profile';
+import PhotoConfirmScreen from './Screens/PhotoConfirm';
+import { createStackNavigator } from "react-navigation-stack";
+
+const CameraStack = createStackNavigator(
+    {
+    Camera: {
+      screen: CameraScreen,
+      navigationOptions: () => ({
+        title: "Camera"
+      })
+    },
+    PhotoConfirm: {
+      screen: PhotoConfirmScreen,
+      navigationOptions: () => ({
+        title: "PhotoConfirm"
+      })
+    }
+    },
+    {
+        initialRouteName: "Camera"
+    }
+  );
 
 const TabNavigator = createMaterialBottomTabNavigator(
     {
        Camera: {
-           screen: CameraScreen,
+           screen: CameraStack,
            navigationOptions: {
                tabBarIcon: ({ tintColor }) => (
                    <View>

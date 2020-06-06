@@ -6,6 +6,7 @@ import * as Permissions from 'expo-permissions';
 import { Platform, } from 'react-native';
 import { FontAwesome, Ionicons,MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import firebase from '../firebaseDb';
 
 
 export default class CameraScreen extends Component {
@@ -13,6 +14,7 @@ export default class CameraScreen extends Component {
     super(props);
     this.state = {
       retakeInt: 0,
+      dimageurl: '',
 
     };
   }
@@ -48,11 +50,14 @@ export default class CameraScreen extends Component {
     })
   }
 
+  
+
   takePicture = async () => {
     if (this.camera) {
       let photo = await this.camera.takePictureAsync().then( (data) => {
-        console.log(data)
-        this.props.navigation.navigate("Journal", {data: data})
+        this.props.navigation.navigate('PhotoConfirm', {'imageurl': data.uri});
+        this.props.navigation.navigate('PhotoConfirm'); 
+      
       })
     }
   }
@@ -120,33 +125,3 @@ export default class CameraScreen extends Component {
     }
   }
 }
-
-/*
-import React, {Component} from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createAppContainer } from 'react-navigation';
-import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { Icon } from 'react-native-elements';
-import { useState, useEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Camera } from 'expo-camera';
-
-export default class CameraScreen extends Component {
-    render() {
-        return (
-            <View style = {styles.container}>
-                <Text>Camera</Text>
-            </View>
-        )
-    }
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    }
-});
-*/

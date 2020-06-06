@@ -5,12 +5,12 @@ import { createAppContainer } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Icon } from 'react-native-elements';
 import Navigator from './theTabs';
-import firebase from 'firebase';
 
 export default class App extends Component {
     constructor(props) {
         super(props)
         this.state={
+            isReady: false,
             
         };
     }
