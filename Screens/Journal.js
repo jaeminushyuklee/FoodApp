@@ -120,7 +120,7 @@ export default class Journal extends Component {
             onChange={this.onChange}    
             activeSections={this.state.activeSections}
             >
-            <Accordion.Panel header= {item.name}>
+            <Accordion.Panel header= {item.foodname}>
               <List>
               <List.Item>
                   <Image
