@@ -31,6 +31,7 @@ export default class PhotoConfirm extends Component {
             dimageurl: '',
             theuuid: '',
             buttoncolor: 'white',
+            submitting: '',
         };
     }
 
@@ -126,6 +127,9 @@ export default class PhotoConfirm extends Component {
             <Text>{this.state.foodname}</Text>
             <Button
              onPress = {async () => {
+                this.setState({
+                    submitting: 'Submitting...please hold',
+                })
                 const response = await fetch(this.state.imageurl);
                 const blob = await response.blob();
                 const randomid = uuid.v4();
@@ -187,56 +191,16 @@ export default class PhotoConfirm extends Component {
                             })
                             .catch(error => {
                                 console.log(error)
-                            })
-                            
-                            
-                            
-                            
+                            }) 
                         }
                     });
-                    
-                
-                
-
-
-
-                /*
-                const mealref = db.collection('entirelog').doc(this.state.docid).collection('meals').doc("m" + this.state.idofmeal.toString());
-                mealref.get().then(docSnapshot => {
-                    if(docSnapshot.exists){
-                        this.setState({
-                            idofmeal: this.state.idofmeal +1,
-                        })
-                        db.collection('entirelog')
-                        .doc(this.state.docid)
-                        .collection('meals')
-                        .doc('m' + (idofmeal).toString())
-                        .set({
-                            id: this.state.idofmeal,
-                            protein: this.state.protein,
-                            carbohydrate: this.state.carbohyrdate,
-                            foodname: this.state.foodname,
-                            durl: downloadurl,
-                            photoid: randomid,
-                        });
-                    } else {
-                        mealref.set({
-                            id: this.state.idofmeal,
-                            protein: this.state.protein,
-                            carbohydrate: this.state.carbohyrdate,
-                            foodname: this.state.foodname,
-                            durl: downloadurl,
-                            photoid: randomid,
-                        });
-                    }
-                });
-                */
-            
-    
-            
-        
+                    this.setState({
+                        submitting: 'Submitted',
+                    })
+                    this.props.navigation.navigate('Journal'); 
               }}
             >Submit</Button>
+            <Text>{this.state.submitting}</Text>
             </View>
         )
     }

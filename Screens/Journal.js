@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { Image } from 'react-native'
 import { Accordion, List, Button } from '@ant-design/react-native';
 import * as Font from 'expo-font';
@@ -183,7 +183,7 @@ export default class Journal extends Component {
       return <AppLoading />;
     }
     return(
-      <View>
+      <ScrollView>
 
       <View>
         {this.renderButtons()}
@@ -193,7 +193,7 @@ export default class Journal extends Component {
         {this.renderAccordion()}
       </View>
       
-      </View>
+      </ScrollView>
       
       
       
