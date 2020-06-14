@@ -7,8 +7,22 @@ import CameraScreen from './Screens/Camera';
 import JournalScreen from './Screens/Journal';
 import StatisticsScreen from './Screens/Statistics';
 import ProfileScreen from './Screens/Profile';
+import LoginScreen from './Screens/Login'
 import PhotoConfirmScreen from './Screens/PhotoConfirm';
 import { createStackNavigator } from "react-navigation-stack";
+import { createSwitchNavigator } from 'react-navigation';
+import LoadingScreen from './Screens/Loading'
+
+const LoginStack = createStackNavigator(
+    {
+        Login: {
+            screen: LoginScreen,
+            navigationOptions: () => ({
+                title: "Login"
+            })
+        }
+    },
+)
 
 const CameraStack = createStackNavigator(
     {
@@ -30,7 +44,7 @@ const CameraStack = createStackNavigator(
     }
   );
 
-const TabNavigator = createMaterialBottomTabNavigator(
+const TabStack = createMaterialBottomTabNavigator(
     {
        Camera: {
            screen: CameraStack,
@@ -84,4 +98,15 @@ const TabNavigator = createMaterialBottomTabNavigator(
     }
 );
 
-export default createAppContainer(TabNavigator);
+const MainStack = createSwitchNavigator(
+    {
+      Login: LoginStack,
+      Loading: LoadingScreen,
+      Tabs: TabStack
+    },
+    {
+      initialRouteName: 'Loading'
+    }
+  );
+
+export default createAppContainer(MainStack);
