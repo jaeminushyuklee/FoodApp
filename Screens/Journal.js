@@ -10,7 +10,7 @@ import firebase from '../firebaseDb';
 export default class Journal extends Component {
   constructor(props) {
     super(props);
-    
+    let user = firebase.auth().currentUser;
     this.state = {
       isReady: false,
       firsttime: true,
@@ -23,6 +23,7 @@ export default class Journal extends Component {
       accordionarr: [],
       urlarray: [],
       dimageurl: '',
+      currentuserid: user.uid,
     
     };
     this.onChange = activeSections => {
@@ -57,7 +58,7 @@ export default class Journal extends Component {
     var date = new Date().getDate();
     var month = new Date().getMonth() + 1;
     var year = new Date().getFullYear();
-    db.collection('entirelog').where('date','==', year + "-" + month + "-" + date)
+    db.collection('users').doc(this.state.currentuserid).collection('entirelog').where('date','==', year + "-" + month + "-" + date)
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(doc => {
@@ -66,7 +67,7 @@ export default class Journal extends Component {
             displaydatestringversion: doc.get('date'),
             displaydate: new DateConversion().dateconversion(doc.get('date')),
           });
-          db.collection('entirelog').doc(this.state.idofdate).collection('meals').get().then(querySnapshot => {
+          db.collection('users').doc(this.state.currentuserid).collection('entirelog').doc(this.state.idofdate).collection('meals').get().then(querySnapshot => {
             const yourDocuments = querySnapshot.docs.map((doc) => doc.data());
             this.setState({
               accordionarr: yourDocuments
@@ -86,7 +87,7 @@ export default class Journal extends Component {
     if (this.state.displaydatestringversion!==prevState.displaydatestringversion) {
 
     var db = firebase.firestore();
-    db.collection('entirelog').where('date','==', this.state.displaydatestringversion)
+    db.collection('users').doc(this.state.currentuserid).collection('entirelog').where('date','==', this.state.displaydatestringversion)
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(doc => {
@@ -95,7 +96,7 @@ export default class Journal extends Component {
             displaydatestringversion: doc.get('date'),
             displaydate: new DateConversion().dateconversion(doc.get('date')),
           });
-          db.collection('entirelog').doc(this.state.idofdate).collection('meals').get().then(querySnapshot => {
+          db.collection('users').doc(this.state.currentuserid).collection('entirelog').doc(this.state.idofdate).collection('meals').get().then(querySnapshot => {
             const yourDocuments = querySnapshot.docs.map((doc) => doc.data());
             this.setState({
               accordionarr: yourDocuments

@@ -15,6 +15,7 @@ export default class CameraScreen extends Component {
     this.state = {
       retakeInt: 0,
       dimageurl: '',
+      
 
     };
   }

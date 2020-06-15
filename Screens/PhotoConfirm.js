@@ -17,6 +17,7 @@ export default class PhotoConfirm extends Component {
         var date = new Date().getDate();
         var month = new Date().getMonth() + 1;
         var year = new Date().getFullYear();
+        let user = firebase.auth().currentUser;
         this.state = {
             isTfReady: false,
             isModelReady: false,
@@ -29,7 +30,7 @@ export default class PhotoConfirm extends Component {
             idofmeal: 0,
             imageurl: this.props.navigation.getParam('imageurl', ''),
             dimageurl: '',
-            theuuid: '',
+            currentuserid: user.uid,
             buttoncolor: 'white',
             submitting: '',
         };
@@ -138,7 +139,7 @@ export default class PhotoConfirm extends Component {
                 const downloadurl = await ref.getDownloadURL().catch((error) => { throw error });
 
                 var db = firebase.firestore();
-                db.collection("entirelog").doc(this.state.docid).set({
+                db.collection('users').doc(this.state.currentuserid).collection("entirelog").doc(this.state.docid).set({
                     date: this.state.docid,
                 })
                 .then(function() {
@@ -149,10 +150,11 @@ export default class PhotoConfirm extends Component {
                 });
 
                 
-                const mealref = db.collection('entirelog').doc(this.state.docid).collection('meals').doc("m" + this.state.idofmeal.toString());
+                const mealref = db.collection('users').doc(this.state.currentuserid).collection('entirelog').doc(this.state.docid).collection('meals').doc("m" + this.state.idofmeal.toString());
                     mealref.get().then(docSnapshot => {
                         if(!(docSnapshot.exists)) {
-                            db.collection('entirelog')
+                            db.collection('users').doc(this.state.currentuserid)
+                            .collection('entirelog')
                             .doc(this.state.docid)
                             .collection('meals')
                             .doc('m' + (this.state.idofmeal).toString())
@@ -171,7 +173,8 @@ export default class PhotoConfirm extends Component {
                             var vcarbohydrate = this.state.carbohyrdate
                             var vfoodname = this.state.foodname
                             var vdocid = this.state.docid
-                            var collection = db.collection('entirelog').doc(this.state.docid).collection('meals');
+                            var vcurrentuserid = this.state.currentuserid
+                            var collection = db.collection('users').doc(this.state.currentuserid).collection('entirelog').doc(this.state.docid).collection('meals');
                             var query = collection.orderBy('id', "desc").limit(1);
                             query.get().then(function(querySnapshot) {
                             querySnapshot.forEach(function(doc) {
@@ -179,7 +182,8 @@ export default class PhotoConfirm extends Component {
                                 temparr = doc.id.split(/([0-9]+)/)
                                 lastid = Number(temparr[1]);
                                 console.log('here',lastid)
-                                db.collection('entirelog').doc(vdocid).collection('meals').doc("m" + (lastid+1).toString()).set({
+                                db.collection('users').doc(vcurrentuserid).
+                                collection('entirelog').doc(vdocid).collection('meals').doc("m" + (lastid+1).toString()).set({
                                     id: lastid + 1,
                                     protein: vprotein,
                                     carbohydrate: vcarbohydrate,

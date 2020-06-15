@@ -5,24 +5,18 @@ import { createAppContainer } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Icon } from 'react-native-elements';
 import { Image } from 'react-native'
+import { Accordion, List, Button } from '@ant-design/react-native';
 import firebase from '../firebaseDb';
 
 export default class Profile extends Component {
-    constructor(props){
-        super(props)
-        this.state = { 
-        }
-    }
-    async render() {
-        const ref = firebase.storage().ref('05e63e76-41a9-46ec-98c2-b175267992ec');
-        const url = await ref.getDownloadURL();
+    render() {
         return (
             <View style = {styles.container}>
-                <Image
-                    style = {styles.sizer   }
-                    source = {{uri: url}}
-                >
-                </Image>
+                <Button
+                onPress = {() => {
+                    firebase.auth().signOut();
+                }}
+                >Sign Out</Button>
             </View>
         )
     }

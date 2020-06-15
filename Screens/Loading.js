@@ -7,24 +7,30 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 import { Icon } from 'react-native-elements';
 import { Image } from 'react-native'
 import firebase from '../firebaseDb'
-import * as AppAuth from 'expo-app-auth';
-import * as GoogleSignIn from 'expo-google-sign-in';
-
 
 
 export default class Loading extends Component {
-    componentDidMount() {
-        firebase.auth().onAuthStateChanged(user => {
-            this.props.navigation.navigate(user ? "Tabs" : "Login")
-        })
-    }
-    render() {
-        return(
-            <View style={styles.container}>
-                <ActivityIndicator size = "large"/>
-            </View>
-        );
-    }
+
+componentDidMount(){
+    this.checkifLoggedin();
+}
+
+checkifLoggedin = () => {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            this.props.navigation.navigate('Tabs');
+        } else {
+            this.props.navigation.navigate('Login');
+        }
+    }.bind(this));
+};
+render() {
+     return(
+         <View style={styles.container}>
+              <ActivityIndicator size = 'large'/>
+       </View>
+     );
+   }
 }
 
 const styles = StyleSheet.create({
