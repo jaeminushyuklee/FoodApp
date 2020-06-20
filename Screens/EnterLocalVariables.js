@@ -8,7 +8,7 @@ import { Image } from 'react-native'
 import { Accordion, List, Button, InputItem, Radio, PickerView } from '@ant-design/react-native';
 import firebase from '../firebaseDb';
 const RadioItem = Radio.RadioItem;
-export default class Statistics extends Component {
+export default class EnterLocalVariables extends Component {
     /*
     Weight Input + Dropdown
     Age Input
@@ -23,7 +23,9 @@ export default class Statistics extends Component {
     */
    constructor(props){
        super(props);
+       let user = firebase.auth().currentUser;
        this.state = {
+           currentuserid: user.uid,
            weight: 0,
            age: 0,
            location: '',
@@ -179,6 +181,14 @@ export default class Statistics extends Component {
               </List>
               <Button
               onPress = {() => {
+                var db = firebase.firestore();
+                db.collection('users').doc(this.state.currentuserid).set({
+                    weight: this.state.weight,
+                    smoking: this.state.smoking,
+                    ethnicity: this.state.ethnicity,
+                    diabetes: this.state.diabetes
+                });
+                this.props.navigation.navigate('Tabs')
                 console.log(this.state.weight);
                 console.log(this.state.smoking);
                 console.log(this.state.ethnicity);

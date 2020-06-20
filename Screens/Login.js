@@ -44,7 +44,7 @@ export default class Login extends Component {
                 googleUser.accessToken,
             );
             // Sign in with credential from the Google user.
-            firebase.auth().signInWithCredential(credential).then(function(result) {
+            firebase.auth().signInWithCredential(credential).then(function(result) {989
             }).catch(function(error) {
               // Handle Errors here.
               var errorCode = error.code;

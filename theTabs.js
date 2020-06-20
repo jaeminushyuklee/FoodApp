@@ -12,7 +12,7 @@ import PhotoConfirmScreen from './Screens/PhotoConfirm';
 import { createStackNavigator } from "react-navigation-stack";
 import { createSwitchNavigator } from 'react-navigation';
 import LoadingScreen from './Screens/Loading'
-
+import LocalvScreen from './Screens/EnterLocalVariables'
 const LoginStack = createStackNavigator(
     {
         Login: {
@@ -102,6 +102,7 @@ const MainStack = createSwitchNavigator(
     {
       Login: LoginStack,
       Loading: LoadingScreen,
+      Localv: LocalvScreen,
       Tabs: TabStack
     },
     {

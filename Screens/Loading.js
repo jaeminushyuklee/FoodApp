@@ -11,14 +11,23 @@ import firebase from '../firebaseDb'
 
 export default class Loading extends Component {
 
+
 componentDidMount(){
     this.checkifLoggedin();
 }
 
 checkifLoggedin = () => {
     firebase.auth().onAuthStateChanged(function(user) {
+        
         if (user) {
-            this.props.navigation.navigate('Tabs');
+            let currentuser = firebase.auth().currentUser;
+            firebase.firestore().collection('users').doc(currentuser.uid).get().then(docSnapshot => {
+                if(docSnapshot.exists) {
+                    this.props.navigation.navigate('Tabs');
+                } else {
+                    this.props.navigation.navigate('Localv')
+                }
+            });
         } else {
             this.props.navigation.navigate('Login');
         }
