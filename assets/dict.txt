@@ -1,7 +1,0 @@
-background
-doughnut
-carrot_cake
-cupcake
-caesar_salad
-dumpling
-chicken_quesadilla
