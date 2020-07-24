@@ -6,8 +6,7 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 import { Icon } from 'react-native-elements';
 import Navigator from './theTabs';
 import {decode, encode} from 'base-64'
-
-
+import server from './serverapp'
 
 export default class App extends Component {
     constructor(props) {
